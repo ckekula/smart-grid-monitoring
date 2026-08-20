@@ -8,16 +8,16 @@ __pycache__/
 
 .env
 .venv/
-
-# IDEs and Editors
 .vscode/
-.idea/
-*.swp
-*.swo
 
 # OS generated files
 .DS_Store
 Thumbs.db
 
-# Log files
-*.log
+# Airflow specific
+logs/
+airflow.db
+airflow.cfg
+unittests.cfg
+webserver_config.py
+standalone_admin_password.txt
