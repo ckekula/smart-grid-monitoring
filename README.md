@@ -31,3 +31,7 @@ uv sync
 ```
 
 # Run the Application
+
+```bash
+uvicorn main:app --reload
+```
