@@ -364,6 +364,24 @@ services:
       - ./apps:/opt/spark/apps
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
 
+  spark-submit:
+    image: spark:4.0.2-java21-python3
+    user: root
+    depends_on:
+      - spark-master
+      - kafka
+    volumes:
+      - ./src:/opt/spark/apps/src
+    working_dir: /opt/spark/apps
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - PYTHONPATH=/opt/spark/apps
+    command: >
+      /opt/spark/bin/spark-submit
+      --master spark://spark-master:7077
+      --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.1
+      /opt/spark/apps/src/spark/streaming/consumer.py
+
 
 volumes:
   kafka-data:

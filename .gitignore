@@ -21,3 +21,7 @@ airflow.cfg
 unittests.cfg
 webserver_config.py
 standalone_admin_password.txt
+
+# Spark specific
+apps/
+smart-grid-checkpoint/
