@@ -2,10 +2,10 @@ from pathlib import Path
 
 import pandas as pd
 
-DATA_DIR = Path(__file__).resolve().parent
+DATA_DIR = Path(__file__).resolve().parent.parent
 DATASET = DATA_DIR / "smart_grid_dataset_new.csv"
 
-def load_dataset(file_path: Path = DATASET) -> pd.DataFrame:
+def load_dataset(file_path: Path) -> pd.DataFrame:
     if not file_path.exists():
         raise FileNotFoundError(f"Dataset not found: {file_path}")
 
