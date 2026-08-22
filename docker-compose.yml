@@ -40,13 +40,13 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AIRFLOW_DB}
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -369,17 +369,24 @@ services:
     user: root
     depends_on:
       - spark-master
+      - spark-worker
       - kafka
+      - postgres
     volumes:
       - ./src:/opt/spark/apps/src
+      - ./spark-checkpoints:/opt/spark/checkpoints
     working_dir: /opt/spark/apps
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - PYTHONPATH=/opt/spark/apps
+      - POSTGRES_URL=${POSTGRES_URL}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - CHECKPOINT_LOCATION=/opt/spark/checkpoints/zone-metrics
     command: >
       /opt/spark/bin/spark-submit
       --master spark://spark-master:7077
-      --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.1
+      --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.2,org.postgresql:postgresql:42.7.7
       /opt/spark/apps/src/spark/streaming/consumer.py
 
 

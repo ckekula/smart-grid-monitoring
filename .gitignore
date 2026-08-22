@@ -23,5 +23,5 @@ webserver_config.py
 standalone_admin_password.txt
 
 # Spark specific
+spark-checkpoints/
 apps/
-smart-grid-checkpoint/

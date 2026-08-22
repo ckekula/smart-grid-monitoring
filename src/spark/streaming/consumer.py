@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 
 from src.config import CHECKPOINT_LOCATION, KAFKA_BOOTSTRAP_SERVERS, KAFKA_TOPIC
 from src.spark.streaming.schema import SMART_METER_SCHEMA
+from src.spark.streaming.sink import write_zone_metrics
 from src.spark.streaming.transformer import create_zone_metrics, parse_kafka_events
 
 
@@ -34,7 +35,7 @@ def main():
         zone_metrics_df
         .writeStream
         .outputMode("update")
-        .format("console")
+        .foreachBatch(write_zone_metrics)
         .option("truncate", "false")
         .option("numRows", 20)
         .trigger(processingTime="10 seconds")
