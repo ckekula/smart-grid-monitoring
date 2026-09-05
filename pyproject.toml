@@ -7,7 +7,9 @@ dependencies = [
     "confluent-kafka>=2.15.0",
     "fastapi>=0.141.1",
     "pandas>=3.0.5",
+    "psycopg2-binary>=2.9.12",
     "pyspark==4.0.2",
+    "sqlalchemy>=2.0.52",
     "uvicorn[standard]>=0.52.4",
 ]
 

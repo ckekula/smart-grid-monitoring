@@ -17,7 +17,7 @@ uv venv --python 3.12.12
 # for Linux/macOS:
 source .venv/bin/activate
 # for Windows
-.venv\Script\activate
+.venv\Scripts\Activate.ps1
 ```
 
 ## Install Dependencies
@@ -46,7 +46,7 @@ docker compose exec kafka kafka-topics --create \
 
 1. Delete Spark's streaming checkpoint
 ```bash
-rm -rf src/smart-grid-checkpoint/
+rm -rf spark-checkpoints/
 ```
 
 2. Delete and recreate the Kafka topic
@@ -74,10 +74,58 @@ docker compose logs -f spark-submit
 
 ## Create the Postgres Sink
 ```bash
-docker compose exec postgres psql -U smart_admin -d airflow
+docker compose exec postgres psql -U airflow -d airflow
 CREATE DATABASE smart_grid;
+exit
+docker compose exec postgres psql -U airflow -d smart_grid
+CREATE SCHEMA IF NOT EXISTS smart_grid;
 ```
 
+### Create the Metrics table
+```bash
+CREATE TABLE smart_grid.realtime_zone_metrics (
+    window_start TIMESTAMP NOT NULL,
+    window_end TIMESTAMP NOT NULL,
+
+    grid_zone VARCHAR(20) NOT NULL,
+
+    total_load_kw DOUBLE PRECISION NOT NULL,
+    total_consumption_kwh DOUBLE PRECISION NOT NULL,
+
+    solar_generation_kwh DOUBLE PRECISION NOT NULL,
+    wind_generation_kwh DOUBLE PRECISION NOT NULL,
+    renewable_generation_kwh DOUBLE PRECISION NOT NULL,
+
+    grid_import_kwh DOUBLE PRECISION NOT NULL,
+    grid_export_kwh DOUBLE PRECISION NOT NULL,
+
+    renewable_contribution_pct DOUBLE PRECISION NOT NULL,
+
+    meter_reading_count INTEGER NOT NULL,
+    meter_count INTEGER NOT NULL,
+    household_count INTEGER NOT NULL,
+
+    processed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (window_start, grid_zone)
+);
+```
+
+### Create Indexes
+```bash
+CREATE INDEX idx_realtime_zone_metrics_zone_time
+ON smart_grid.realtime_zone_metrics (
+    grid_zone,
+    window_end DESC
+);
+
+CREATE INDEX idx_realtime_zone_metrics_window
+ON smart_grid.realtime_zone_metrics (
+    window_start DESC
+);
+
+exit
+```
 
 ## Log Spark Structured Streaming Consumer outputs
 ```bash
@@ -87,7 +135,7 @@ docker compose logs -f spark-submit
 ## Run the producer
 ```bash
 cd src
-python producer.py
+uv run python producer.py
 ```
 
 ```bash

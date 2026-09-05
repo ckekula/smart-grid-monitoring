@@ -123,6 +123,7 @@ def produce_events(producer: Producer, events: list[dict]) -> None:
 
 
 def main() -> None:
+    producer = None
     logger.info("Loading dataset | path=%s", DATASET_PATH)
 
     try:
