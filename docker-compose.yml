@@ -362,6 +362,7 @@ services:
       - SPARK_NO_DAEMONIZE=true
     volumes:
       - ./apps:/opt/spark/apps
+      - ./data:/opt/spark/data
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
 
   spark-submit:
@@ -374,6 +375,7 @@ services:
       - postgres
     volumes:
       - ./src:/opt/spark/apps/src
+      - ./data:/opt/spark/data
       - ./spark-checkpoints:/opt/spark/checkpoints
     working_dir: /opt/spark/apps
     environment:
@@ -386,8 +388,38 @@ services:
     command: >
       /opt/spark/bin/spark-submit
       --master spark://spark-master:7077
+      --executor-cores 8
+      --executor-memory 1g
       --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.2,org.postgresql:postgresql:42.7.7
       /opt/spark/apps/src/spark/streaming/consumer.py
+
+  spark-batch:
+    image: spark:4.0.2-java21-python3
+    user: root
+
+    depends_on:
+      spark-master:
+        condition: service_started
+      spark-worker:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+
+    volumes:
+      - ./src:/opt/spark/apps/src
+      - ./data:/opt/spark/data
+
+    working_dir: /opt/spark/apps
+
+    environment:
+      - POSTGRES_URL=jdbc:postgresql://postgres:5432/smart_grid
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - PYTHONPATH=/opt/spark/apps/src
+
+    command: >
+      /bin/bash -c
+      "sleep infinity"
 
 
 volumes:

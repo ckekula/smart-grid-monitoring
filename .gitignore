@@ -25,3 +25,4 @@ standalone_admin_password.txt
 # Spark specific
 spark-checkpoints/
 apps/
+data/

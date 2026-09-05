@@ -6,7 +6,7 @@ from pathlib import Path
 
 SOURCE_FILE = os.getenv(
     "SOURCE_FILE",
-    "data/smart_grid.csv",
+    "src/smart_grid_dataset_new.csv",
 )
 
 OUTPUT_DIR = Path(

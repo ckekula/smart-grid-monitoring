@@ -196,6 +196,47 @@ ON smart_grid.daily_household_billing (
 );
 ```
 
+## Create Airflow DAG
+
+### Before Airflow, manually create the first daily file
+```bash
+python .\src\spark\batch\daily_batch_source.py
+```
+Stop it after the first file appears in: `data/batch/smart_grid_2024-01-01.csv`
+
+### 
+```bash
+docker compose exec \
+  -e BATCH_FILE=/opt/spark/data/batch/smart_grid_2024-01-01.csv \
+  spark-batch \
+  /opt/spark/bin/spark-submit \
+  --master spark://spark-master:7077 \
+  --packages org.postgresql:postgresql:42.7.7 \
+  /opt/spark/apps/src/spark/batch/billing_job.py
+```
+
+### Verify PostgreSQL
+```bash
+docker compose exec postgres \
+  psql -U airflow -d smart_grid
+
+# then:
+SELECT
+    billing_date,
+    household_id,
+    grid_zone,
+    total_consumption_kwh,
+    renewable_generation_kwh,
+    grid_import_kwh,
+    grid_export_kwh,
+    average_tariff_usd_kwh,
+    energy_charge_usd
+FROM smart_grid.daily_household_billing
+ORDER BY household_id;
+```
+
+You should get the first completed day with 16 billing rows.
+
 # Run the Application
 
 ```bash
