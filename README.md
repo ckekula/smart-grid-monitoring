@@ -25,7 +25,7 @@ source .venv/bin/activate
 uv sync
 ```
 
-# Run the Application
+# Setting Up the Pipeline
 
 ## Run Docker compose
 ```bash
@@ -137,6 +137,66 @@ docker compose logs -f spark-submit
 cd src
 uv run python producer.py
 ```
+
+View the Kafka UI at: `localhost:8080` and go to the messages tab.
+You should see the number of messages increase.
+
+## Create the batch table
+
+### connect to the smart gird database
+
+```bash
+docker compose exec postgres psql -U airflow -d smart_grid
+```
+
+### create the daily_household_billing table:
+```bash
+CREATE TABLE smart_grid.daily_household_billing (
+    billing_date DATE NOT NULL,
+    household_id VARCHAR(50) NOT NULL,
+    grid_zone VARCHAR(20) NOT NULL,
+
+    total_consumption_kwh DOUBLE PRECISION NOT NULL,
+    solar_generation_kwh DOUBLE PRECISION NOT NULL,
+    wind_generation_kwh DOUBLE PRECISION NOT NULL,
+    renewable_generation_kwh DOUBLE PRECISION NOT NULL,
+
+    grid_import_kwh DOUBLE PRECISION NOT NULL,
+    grid_export_kwh DOUBLE PRECISION NOT NULL,
+
+    average_tariff_usd_kwh DOUBLE PRECISION NOT NULL,
+    energy_charge_usd DOUBLE PRECISION NOT NULL,
+
+    meter_count INTEGER NOT NULL,
+    reading_count INTEGER NOT NULL,
+
+    processed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (billing_date, household_id)
+);
+```
+
+### Create the Indexes
+```bash
+CREATE INDEX idx_daily_billing_date
+ON smart_grid.daily_household_billing (
+    billing_date DESC
+);
+
+CREATE INDEX idx_daily_billing_household
+ON smart_grid.daily_household_billing (
+    household_id,
+    billing_date DESC
+);
+
+CREATE INDEX idx_daily_billing_zone_date
+ON smart_grid.daily_household_billing (
+    grid_zone,
+    billing_date DESC
+);
+```
+
+# Run the Application
 
 ```bash
 uvicorn main:app --reload
