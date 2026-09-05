@@ -237,6 +237,10 @@ ORDER BY household_id;
 
 You should get the first completed day with 16 billing rows.
 
+### Trigger the DAG manually
+
+Go to the Airflow UI at: `http://localhost:8081`
+
 # Run the Application
 
 ```bash
