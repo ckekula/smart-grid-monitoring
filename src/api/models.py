@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import (
+    Date,
     DateTime,
     Float,
     Integer,
@@ -85,6 +86,82 @@ class RealtimeZoneMetric(Base):
     )
 
     household_count: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+    )
+
+    processed_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=False,
+    )
+
+class DailyHouseholdBilling(Base):
+    __tablename__ = "daily_household_billing"
+    __table_args__ = {
+        "schema": "smart_grid",
+    }
+
+    billing_date: Mapped[date] = mapped_column(
+        Date,
+        primary_key=True,
+    )
+
+    household_id: Mapped[str] = mapped_column(
+        String(50),
+        primary_key=True,
+    )
+
+    grid_zone: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+    )
+
+    total_consumption_kwh: Mapped[float] = mapped_column(
+        Float,
+        nullable=False,
+    )
+
+    solar_generation_kwh: Mapped[float] = mapped_column(
+        Float,
+        nullable=False,
+    )
+
+    wind_generation_kwh: Mapped[float] = mapped_column(
+        Float,
+        nullable=False,
+    )
+
+    renewable_generation_kwh: Mapped[float] = mapped_column(
+        Float,
+        nullable=False,
+    )
+
+    grid_import_kwh: Mapped[float] = mapped_column(
+        Float,
+        nullable=False,
+    )
+
+    grid_export_kwh: Mapped[float] = mapped_column(
+        Float,
+        nullable=False,
+    )
+
+    average_tariff_usd_kwh: Mapped[float] = mapped_column(
+        Float,
+        nullable=False,
+    )
+
+    energy_charge_usd: Mapped[float] = mapped_column(
+        Float,
+        nullable=False,
+    )
+
+    meter_count: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+    )
+
+    reading_count: Mapped[int] = mapped_column(
         Integer,
         nullable=False,
     )

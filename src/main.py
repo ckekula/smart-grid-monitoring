@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from api.database import get_db
 from api.models import RealtimeZoneMetric
+from api.routes.billing import router as billing_router
 from api.routes.zones import router as zones_router
 
 app = FastAPI(
@@ -16,7 +17,7 @@ app = FastAPI(
 
 
 app.include_router(zones_router)
-
+app.include_router(billing_router)
 
 @app.get("/health")
 def health(

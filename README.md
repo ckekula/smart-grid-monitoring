@@ -67,3 +67,12 @@ docker exec kafka kafka-topics \
 cd src
 uvicorn main:app --reload
 ```
+
+You can test the API with:
+```bash
+GET /api/v1/billing/current
+GET /api/v1/billing/H001
+GET /api/v1/billing/H001/history
+GET /api/v1/billing/daily/2024-01-02
+```
+

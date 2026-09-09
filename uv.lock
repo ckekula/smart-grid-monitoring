@@ -2335,6 +2335,7 @@ name = "smart-grid-monitoring"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "apache-airflow" },
     { name = "apache-airflow-providers-docker" },
     { name = "confluent-kafka" },
     { name = "fastapi" },
@@ -2347,6 +2348,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "apache-airflow", specifier = ">=3.2.2" },
     { name = "apache-airflow-providers-docker", specifier = ">=4.5.9" },
     { name = "confluent-kafka", specifier = ">=2.15.0" },
     { name = "fastapi", specifier = ">=0.141.1" },
